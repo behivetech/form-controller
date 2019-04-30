@@ -18,8 +18,8 @@ interface useFormControllerArgs {
        [key: string]: {
            checked?: Boolean
            noSubmit?: Boolean
-           value?: string | number | [string | number]
-           validation?: () => Boolean | [() => Boolean]
+           value?: string | number | [string | number] | undefined
+           validation?: () => string | [() => string]
        }
    };
    onSubmit: Function;
@@ -43,7 +43,7 @@ interface useFormControllerResponse {
         ref: ()=> {
             inputElement: {value: string}
         };
-        value: string | number | [string | number];
+        value: string | number | [string | number] | undefined;
     }
     submitButtonProps: {
         disabled: Boolean | undefined;
@@ -51,15 +51,11 @@ interface useFormControllerResponse {
 }
 
 interface formValues {
-    [key: string]: string | number | [string | number]
+    [key: string]: string | number | [string | number] | undefined
 }
 
 interface fieldRefs {
-    [key: string]: {
-        inputElement: {
-            value: string
-        }
-    }
+    [key: string]: any
 }
 
 interface fieldErrors {
@@ -86,7 +82,7 @@ export default function useFormController<useFormControllerResponse>({
             name: string,
             checked: Boolean | undefined,
             type: string
-            value: string | number | [string | number]
+            value: string | number | [string | number] | undefined
         }
     ) {
         const fieldValue = (checked || type !== 'checkbox') ? value : "";
@@ -104,41 +100,42 @@ export default function useFormController<useFormControllerResponse>({
         });
     }
 
-    function initField(inputRef: Function) {
-        // Some componet libraries return inputElement as the actual ref
-        // May need to add more if other libraries are used
-        const inputElement = get(inputRef, 'inputElement') || inputRef;
+    function initField<HtmlInputElement>(inputRef: any) {
+        if (inputRef !== null) {
+            // Some componet libraries return inputElement as the actual ref
+            // May need to add more if other libraries are used
+            const inputElement = get(inputRef, 'inputElement') || inputRef;
+            if (inputElement) {
+                const {checked, name, type, value} = inputElement;
 
-        if (inputElement) {
-            const {checked, name, type, value} = inputElement;
-
-            if (!name) {
+                if (!name) {
+                    // eslint-disable-next-line
+                    console.error(
+                        'useFormSubmission: A name attribute must be specified for this element',
+                        {inputElement}
+                    );
+                } else if (!fieldRefs[name]) {
+                    setFieldRefsState(name, inputElement);
+                    !fieldProps[name].noSubmit && setFormValuesState({
+                        name,
+                        checked,
+                        type,
+                        value,
+                    });
+                }
+            } else {
                 // eslint-disable-next-line
                 console.error(
-                    'useFormSubmission: A name attribute must be specified for this element',
-                    {inputElement}
+                    'useFormSubmission: Could not set a ref for this form field',
+                    {inputRef}
                 );
-            } else if (!fieldRefs[name]) {
-                setFieldRefsState(name, inputElement);
-                !fieldProps[name].noSubmit && setFormValuesState({
-                    name,
-                    checked,
-                    type,
-                    value,
-                });
             }
-        } else {
-            // eslint-disable-next-line
-            console.error(
-                'useFormSubmission: Could not set a ref for this form field',
-                {inputRef}
-            );
         }
     }
 
-    function validateField(name: string, value: string | number | [string | number]) {
+    function validateField(name: string, value: string | number | [string | number] | undefined) {
         const validateFunctions = fieldProps[name].validation;
-        let fieldError: string;
+        let fieldError: string | undefined;
 
         if (validateFunctions) {
             const fieldValidation = (isArray(validateFunctions)) ? validateFunctions : [validateFunctions];
@@ -146,13 +143,14 @@ export default function useFormController<useFormControllerResponse>({
             // Using the lodash transform to run until it finds the first error
             // This way it only shows one validation error at a time until
             // they are all gone if there are multiples.
-            transform(fieldValidation, (fieldErrors, validator) => {
+            transform(fieldValidation, (returnFieldErrors, validator) => {
                 if (!isFunction(validator)) {
                     // eslint-disable-next-line
                     console.error('useFormController: Field validators must be functions', {validator})
                 } else {
                     fieldError = validator(value);
                 }
+
 
                 return !fieldError;
             });
@@ -185,7 +183,7 @@ export default function useFormController<useFormControllerResponse>({
         transform(getFieldsToValidate(), (fieldErrors: Object, fieldName: string) => {
             const fieldError = validateField(
                 fieldName,
-                fieldRefs[fieldName].inputElement.value,
+                fieldRefs[fieldName].value,
             );
 
             fieldsHaveError = !!fieldError
@@ -195,7 +193,7 @@ export default function useFormController<useFormControllerResponse>({
         return fieldsHaveError;
     }
 
-    function handleFieldChange(event: React.FormEvent<HTMLInputElement>) {
+    function handleFieldChange(event: React.FormEvent<HTMLInputElement>): void {
         event.preventDefault();
 
         const {
@@ -214,7 +212,7 @@ export default function useFormController<useFormControllerResponse>({
         validateField(name, value);
     }
 
-    function handleFormSubmit(event: React.FormEvent<HTMLInputElement>) {
+    function handleFormSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
         let fieldsHaveError;
@@ -242,17 +240,17 @@ export default function useFormController<useFormControllerResponse>({
     }
 
     const submitButtonProps = {
-        disabled: formIsSubmitting || (!initialSubmit && !isEmpty(fieldErrors)),
+        disabled: !!(formIsSubmitting || (!initialSubmit && !isEmpty(fieldErrors))),
     }
 
     const formFieldProps = {
-        disabled: formIsSubmitting,
+        disabled: !!formIsSubmitting,
         onChange: handleFieldChange,
         ref: initField,
     }
 
     const formProps = {
-        onChange: handleFormSubmit
+        onSubmit: handleFormSubmit
     };
 
     return {
