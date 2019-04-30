@@ -6,4 +6,4 @@ This is a React custom hook to use with forms. It adds the following functionali
 - prevents multiple form submissions
 - disables submit button when form is submitting or when there are field/form errors.
 
-This is still a work in progress. It is not ready and in the middle of testing it.
+This is still a work in progress. It is not ready and in the middle of testing it. Documentation of the usage to come.
