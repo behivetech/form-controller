@@ -139,6 +139,7 @@ interface useFormControllerResponse {
     submitButtonProps: {
         disabled: boolean | undefined;
     }
+    updateFieldProps: Function
 }
 
 interface fieldState {
@@ -166,26 +167,46 @@ export default function useFormController<useFormControllerResponse>({
     const [fieldErrors, setFieldErrors] = useState<fieldErrors>({});
     const [formIsSubmitting, setFormIsSubmitting] = useState<boolean>(false);
     const [initialSubmit, setInitialSubmit] = useState<boolean>(false);
+    const [executeFieldPropUpdate, setExecuteFieldPropUpdate] = useState<boolean>(false);
 
     useEffect(() => {
-        forEach(fieldProps, (fieldObj, fieldName) => {
+        if (executeFieldPropUpdate) {
+            let newFieldState = {...fieldState};
 
-        });
-    },[fieldProps])
+            forEach(fieldProps, (fieldObj, fieldName) => {
+                newFieldState = {
+                      ...newFieldState,
+                      [fieldName]: {
+                          ...newFieldState[fieldName],
+                          ...fieldObj,
+                      }
+                }
+            });
 
-    function setField(name: string, payload: {
-        checked?: boolean | undefined
-        ref?: any // Probably should find the right type for this
-        type?: string
-        value?: string | number | undefined
+            setFieldState(newFieldState);
+            setExecuteFieldPropUpdate(false);
+        }
+    },[executeFieldPropUpdate, fieldProps, fieldState])
+
+    function updateFieldProps() {
+        setExecuteFieldPropUpdate(true);
+    }
+
+    function setField(
+        name: string,
+        payload: {
+            checked?: boolean | undefined
+            ref?: any // Probably should find the right type for this
+            type?: string
+            value?: string | number | undefined
     }) {
         setFieldState({
-            ...fieldState,
-            [name]: {
-                ...fieldState[name],
-                ...payload,
-            }
-        })
+              ...fieldState,
+              [name]: {
+                  ...fieldState[name],
+                  ...payload,
+              }
+        });
     }
 
     function getFormValues(): {[key: string]: any} {
@@ -197,19 +218,19 @@ export default function useFormController<useFormControllerResponse>({
                     checked ||
                     (ref.type !== 'checkbox' && ref.type !== 'radio')
                 )
-                    ? value :
-                    formProps.nullValue;
+                    ? value
+                    : formProps.nullValue;
                 const formValuePath = fieldProps[fieldName].formValuePath;
 
                 if (formValue !== undefined) {
                     if (formValuePath) {
-                        if (!isArray(formValuePath) && endsWith(formValuePath, '[]')) {
-                            const getPath = formValuePath.replace('[]', '');
-                            const currentFormValue =  get(formValues, getPath);
+                        if (endsWith(formValuePath, '[]')) {
+                            const setPath = formValuePath.replace('[]', '');
+                            const currentFormValue =  get(formValues, setPath) || [];
 
-                            (!isArray(currentFormValue))
-                                ? set(formValues, getPath, [formValue])
-                                : set(formValues, getPath, [...currentFormValue, formValue]);
+                            set(formValues, setPath, [...currentFormValue, formValue]);
+                        } else {
+                            set(formValues, formValuePath, formValue);
                         }
 
                     } else {
@@ -233,7 +254,7 @@ export default function useFormController<useFormControllerResponse>({
                 if (!name) {
                     // eslint-disable-next-line
                     console.error(
-                        'useFormSubmission: A name attribute must be specified for this element',
+                        'useFormController: A name attribute must be specified for this element',
                         {inputElement}
                     );
                 } else if (!get(fieldState, [name, 'ref'])) {
@@ -242,7 +263,7 @@ export default function useFormController<useFormControllerResponse>({
             } else {
                 // eslint-disable-next-line
                 console.error(
-                    'useFormSubmission: Could not set a ref for this form field',
+                    'useFormController: Could not set a ref for this form field',
                     {inputRef}
                 );
             }
@@ -395,6 +416,7 @@ export default function useFormController<useFormControllerResponse>({
         getFormProps,
         getFieldProps,
         submitButtonProps,
+        updateFieldProps,
     };
 
 }
