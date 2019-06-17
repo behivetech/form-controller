@@ -19,7 +19,7 @@ interface useFormControllerArgs {
     fieldProps: {
         /**
             The key used here will be the name attribute of the field. It should be a unique
-            name. This key be the default value for the formValuePath if that key isn't set.
+            name. This key will be the default value for the formValuePath if that key isn't set.
             It is important to NOT set a name attribue in the element's/component's props and
             override this key; otherwise, the value will not be set properly for the form values
             or the state value of this field. If you are trying to pass an array of values for
@@ -34,7 +34,7 @@ interface useFormControllerArgs {
             doNotSubmit?: boolean
             /**
                 Defaults to the key of this object if not set.
-                This is param for the lodash get/set functions to be able to set the form values as you need.
+                This is a param for the lodash get/set functions to be able to set the form values as you need.
                 This makes it possible to build an object in the form values as desired such as if you
                 set the formValuePath to my.field.path.field1, it would submit the value in an object
                 like this...
@@ -86,7 +86,7 @@ interface useFormControllerArgs {
     }
     formProps: {
         /**
-            The desired form value to submit when the field is empty or checkbox isn't checked.
+            Overall desired form value to submit when the field is empty or checkbox isn't checked.
             This is typically the value you want to see on the backend. If this isn't set or
             the value is set to undefined, the key of the field will not be submitted with the
             form values object.
@@ -100,7 +100,7 @@ interface useFormControllerArgs {
         onBeforeSubmit?: Function
         /**
             Callback function to execute when all validation passes for the form and it's
-            safe to submit. This is the funciton that should be used for the call to the
+            safe to submit. This is the function that should be used for the call to the
             backend or desired actions after everything passes from the form. If this function
             does not return a Promise, this custom hook will add one.
         */
@@ -212,29 +212,32 @@ export default function useFormController<useFormControllerResponse>({
     function getFormValues(): {[key: string]: any} {
         let formValues = {};
 
-        forEach(fieldState, ({checked, ref, value}, fieldName) => {
+        forEach(fieldState, ({checked, ref = {}, value}, fieldName) => {
             if (!fieldProps[fieldName].doNotSubmit) {
-                const formValue = (
-                    checked ||
-                    (ref.type !== 'checkbox' && ref.type !== 'radio')
-                )
-                    ? value
+                const typeIsCheckbox = (
+                    fieldProps[fieldName].type === 'checkbox' ||
+                    fieldProps[fieldName].type === 'radio'
+                );
+                const nullValue = (typeIsCheckbox)
+                    ? undefined
                     : formProps.nullValue;
-                const formValuePath = fieldProps[fieldName].formValuePath;
+                const formValue = (checked || (!typeIsCheckbox && value && value !== ''))
+                    ? value
+                    : nullValue;
 
                 if (formValue !== undefined) {
-                    if (formValuePath) {
-                        if (endsWith(formValuePath, '[]')) {
-                            const setPath = formValuePath.replace('[]', '');
-                            const currentFormValue =  get(formValues, setPath) || [];
+                    const formValuePath = fieldProps[fieldName].formValuePath || fieldName;
+                    let setPath = (isArray(formValuePath))
+                        ? formValuePath.join('.').replace('.[', '.').replace('].', '.')
+                        : formValuePath;
 
-                            set(formValues, setPath, [...currentFormValue, formValue]);
-                        } else {
-                            set(formValues, formValuePath, formValue);
-                        }
+                    if (endsWith(formValuePath.toString(), '[]')) {
+                        setPath = setPath.replace('[]', '');
+                        const currentFormValue =  get(formValues, setPath) || [];
 
+                        set(formValues, setPath, [...currentFormValue, formValue]);
                     } else {
-                        set(formValues, fieldName, formValue);
+                        set(formValues, setPath, formValue);
                     }
                 }
             }
@@ -340,10 +343,15 @@ export default function useFormController<useFormControllerResponse>({
             name,
             type,
             value
-        } = event.currentTarget;
+        } = event.currentTarget || {
+            checked: false,
+            name: 'nameNotSupplied',
+            type: 'text',
+            value: undefined,
+        };
 
         setField(name, {
-            checked,
+            checked: (checked === true) ? true : false,
             type,
             value,
         });
@@ -392,6 +400,7 @@ export default function useFormController<useFormControllerResponse>({
 
     function getFieldProps(name: string) {
         const {checked, value} = get(fieldState, [name], {}) as any;
+        const {type, otherProps} = get(fieldProps, [name], {}) as any;
 
         return {
             checked,
@@ -399,7 +408,9 @@ export default function useFormController<useFormControllerResponse>({
             name,
             onChange: handleFieldChange,
             ref: initField,
+            type: type || 'text',
             value,
+            ...otherProps || {},
         }
     }
 

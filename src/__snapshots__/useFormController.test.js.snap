@@ -1,0 +1,48 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`useFormController should render elements with the correct props an submit the right values 1`] = `
+<div>
+  <form
+    name="mockFormName"
+  >
+    <div>
+      <input
+        name="myNoSubmitTextField"
+        type="text"
+        value="mock no submit text value"
+      />
+    </div>
+    <div>
+      <input
+        name="mySubmitTextField2"
+        type="text"
+        value="field in a path"
+      />
+    </div>
+    <div>
+      <input
+        checked=""
+        name="myCheckbox"
+        type="checkbox"
+        value="mock checkbox value"
+      />
+      <input
+        name="myCheckbox2"
+        type="checkbox"
+        value="mock checkbox value 2"
+      />
+      <input
+        checked=""
+        name="myCheckbox3"
+        type="checkbox"
+        value="mock checkbox value 3"
+      />
+    </div>
+    <button
+      data-testid="submitButton"
+    >
+      Submit
+    </button>
+  </form>
+</div>
+`;

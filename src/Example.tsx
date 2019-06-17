@@ -21,18 +21,21 @@ export default function Example() {
                 type: 'checkbox',
                 formValuePath: 'myCheckbox[]',
                 value: 'mock checkbox value',
+                otherProps: {id: 'myCheckbox'},
             },
             myCheckbox2: {
-                checked: true,
+                checked: false,
                 type: 'checkbox',
                 formValuePath: 'myCheckbox[]',
                 value: 'mock checkbox value 2',
+                otherProps: {id: 'myCheckbox2'},
             },
             myCheckbox3: {
                 checked: true,
                 type: 'checkbox',
                 formValuePath: 'myCheckbox[]',
                 value: 'mock checkbox value 3',
+                otherProps: {id: 'myCheckbox3'},
             },
             myNoSubmitTextField: {
                 doNotSubmit: true,
@@ -92,21 +95,17 @@ export default function Example() {
                 </div>
                 <div>
                     <input
-                        type="checkbox"
-                        id="myCheckbox"
                         {...getFieldProps('myCheckbox')}
                     />
+                    <label htmlFor="myCheckbox">{getFieldProps('myCheckbox').value}</label>
                     <input
-                        type="checkbox"
-                        id="myCheckbox2"
                         {...getFieldProps('myCheckbox2')}
                     />
+                    <label htmlFor="myCheckbox2">{getFieldProps('myCheckbox2').value}</label>
                     <input
-                        type="checkbox"
-                        id="myCheckbox3"
                         {...getFieldProps('myCheckbox3')}
                     />
-                    <label htmlFor="myNoSubmitTextField">Checkbox Value</label>
+                    <label htmlFor="myCheckbox3">{getFieldProps('myCheckbox3').value}</label>
                 </div>
                 <button {...submitButtonProps}>Submit</button>
             </form>
