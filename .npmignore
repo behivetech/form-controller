@@ -2,6 +2,8 @@ src
 public
 examples
 __mocks__
+src/Example.tsx
+src/index.tsx
 tsconfig.json
 .DS_Store
 .babelrc
