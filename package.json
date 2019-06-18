@@ -1,7 +1,7 @@
 {
     "name": "@bruqui/form-controller",
     "description": "React hook form controller to validate and handle form submissions.",
-    "main": "./dist/useFormController.js",
+    "main": "dist/index.js",
     "files": [
         "dist"
     ],
@@ -21,7 +21,7 @@
     },
     "scripts": {
         "deploybuild": "webpack --config webpack.config.prod.js",
-        "transpile": "babel src -d dist --extensions \".ts,.tsx\" --source-maps inline",
+        "transpile": "babel src -d dist --out-file index.js --extensions \".ts,.tsx\" --source-maps inline",
         "start": "react-scripts start",
         "build": "react-scripts build",
         "test": "react-scripts test",
