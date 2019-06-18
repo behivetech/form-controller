@@ -21,12 +21,12 @@
     },
     "scripts": {
         "deploybuild": "webpack --config webpack.config.prod.js",
-        "transpile": "babel src -d dist --out-file index.js --extensions \".ts,.tsx\" --source-maps inline",
+        "transpile": "babel src --out-file dist/index.js --extensions \".ts,.tsx\" --source-maps inline",
         "start": "react-scripts start",
         "build": "react-scripts build",
         "test": "react-scripts test",
         "eject": "react-scripts eject",
-        "npmpublish": "npm run transpile && git commit -am \"build for publish\" && npm version patch && npm publish"
+        "npmpublish": "npm run transpile && git add --all && git commit -am \"build for publish\" && git push origin master && npm version patch && npm publish"
     },
     "eslintConfig": {
         "extends": "react-app"
