@@ -1,10 +1,11 @@
 {
     "name": "@bruqui/form-controller",
     "description": "React hook form controller to validate and handle form submissions.",
-    "main": "dist/useFormController.js",
+    "main": "./dist/useFormController.js",
     "files": [
         "dist"
     ],
+    "license" : "ISC",
     "version": "0.1.5",
     "dependencies": {
         "@types/node": "^11.13.8",
@@ -24,7 +25,8 @@
         "start": "react-scripts start",
         "build": "react-scripts build",
         "test": "react-scripts test",
-        "eject": "react-scripts eject"
+        "eject": "react-scripts eject",
+        "npmpublish": "npm run transpile && git commit -am \"build for publish\" && npm version patch && npm publish"
     },
     "eslintConfig": {
         "extends": "react-app"
