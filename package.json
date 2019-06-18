@@ -17,7 +17,7 @@
     },
     "scripts": {
         "deploybuild": "webpack --config webpack.config.prod.js",
-        "transpile": "babel src -d dist",
+        "transpile": "babel src -d dist --extensions \".ts,.tsx\" --source-maps inline",
         "start": "react-scripts start",
         "build": "react-scripts build",
         "test": "react-scripts test",
