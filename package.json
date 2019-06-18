@@ -26,7 +26,7 @@
         "build": "react-scripts build",
         "test": "react-scripts test",
         "eject": "react-scripts eject",
-        "npmpublish": "npm run transpile && git add --all && git commit -am \"build for publish\" && git push origin master && npm version patch && npm publish"
+        "npmpublish": "npm run transpile && git add --all && git commit -am \"build for publish\" && npm version patch && git push origin master && npm publish"
     },
     "eslintConfig": {
         "extends": "react-app"
