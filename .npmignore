@@ -1,8 +1,11 @@
 src
 public
+examples
 __mocks__
 tsconfig.json
+.DS_Store
 .babelrc
 .gitignore
 webpack.config.prod.js
 *.sublime-project
+*.sublime-workspace
