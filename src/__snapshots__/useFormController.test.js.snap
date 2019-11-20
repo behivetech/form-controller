@@ -7,6 +7,7 @@ exports[`useFormController should render elements with the correct props an subm
   >
     <div>
       <input
+        data-testid="myNoSubmitTextField"
         name="myNoSubmitTextField"
         type="text"
         value="mock no submit text value"
@@ -14,6 +15,7 @@ exports[`useFormController should render elements with the correct props an subm
     </div>
     <div>
       <input
+        data-testid="mySubmitTextField2"
         name="mySubmitTextField2"
         type="text"
         value="field in a path"
@@ -22,17 +24,20 @@ exports[`useFormController should render elements with the correct props an subm
     <div>
       <input
         checked=""
+        data-testid="myCheckbox"
         name="myCheckbox"
         type="checkbox"
         value="mock checkbox value"
       />
       <input
+        data-testid="myCheckbox2"
         name="myCheckbox2"
         type="checkbox"
         value="mock checkbox value 2"
       />
       <input
         checked=""
+        data-testid="myCheckbox3"
         name="myCheckbox3"
         type="checkbox"
         value="mock checkbox value 3"

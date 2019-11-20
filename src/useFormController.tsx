@@ -117,6 +117,11 @@ interface useFormControllerArgs {
             here as an optoin to keep all the props in one place..
         */
         otherProps?: Object
+        /**
+            Boolean to indicated if there are other submission factors going on which
+            will ulitimately disable all fields and submit button
+        */
+        formIsSubmitting?: boolean | undefined
     }
 }
 
@@ -124,6 +129,7 @@ interface useFormControllerResponse {
     fieldErrors: {
         [key: string]: string
     }
+    formIsSubmitting: boolean
     getFormProps: () => ({
         [key: string]: {
             onSubmit: Function
@@ -391,9 +397,13 @@ export default function useFormController<useFormControllerResponse>({
         onAfterSubmit();
     }
 
+    function isFormSubmitting() {
+        return !!(formIsSubmitting || formProps.formIsSubmitting)
+    }
+
     const submitButtonProps = {
         disabled: !!(
-            formIsSubmitting ||
+            isFormSubmitting() ||
             (initialSubmit && !isEmpty(fieldErrors))
         )
     }
@@ -404,7 +414,7 @@ export default function useFormController<useFormControllerResponse>({
 
         return {
             checked,
-            disabled: !!formIsSubmitting,
+            disabled: isFormSubmitting(),
             name,
             onChange: handleFieldChange,
             ref: initField,
@@ -423,6 +433,7 @@ export default function useFormController<useFormControllerResponse>({
 
     return {
         fieldErrors: (initialSubmit) ? fieldErrors : {},
+        formIsSubmitting: isFormSubmitting(),
         getFormValues,
         getFormProps,
         getFieldProps,

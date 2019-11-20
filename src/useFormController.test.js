@@ -72,23 +72,28 @@ describe('useFormController', () => {
                     <div>
                         <input
                             {...getFieldProps('myNoSubmitTextField')}
+                            data-testid="myNoSubmitTextField"
                         />
                         {renderError('myNoSubmitTextField')}
                     </div>
                     <div>
                         <input
                             {...getFieldProps('mySubmitTextField2')}
+                            data-testid="mySubmitTextField2"
                         />
                     </div>
                     <div>
                         <input
                             {...getFieldProps('myCheckbox')}
+                            data-testid="myCheckbox"
                         />
                         <input
                             {...getFieldProps('myCheckbox2')}
+                            data-testid="myCheckbox2"
                         />
                         <input
                             {...getFieldProps('myCheckbox3')}
+                            data-testid="myCheckbox3"
                         />
                     </div>
                     <button data-testid="submitButton" {...submitButtonProps}>Submit</button>
@@ -112,7 +117,7 @@ describe('useFormController', () => {
     it('should validate fields correctly', async () => {
         const {container, debug, getByTestId} = render(<TestForm />);
 
-        fireEvent.change(container.getElementsByName(['myNoSubmitTextField'])[0], 'x')
+        fireEvent.change(getByTestId('myNoSubmitTextField'), 'x')
         await fireEvent.click(getByTestId('submitButton'));
         debug(JSON.parse(getByTestId('response').innerHTML));
     });
