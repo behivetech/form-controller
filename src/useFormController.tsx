@@ -141,7 +141,8 @@ interface useFormControllerResponse {
         checked?: boolean
         disabled?: boolean
         name: string
-        [key: string] | ref: Function
+        ref?: Function
+        [key: string]: Function
         value: string | number | null
     })
     submitButtonProps: {
