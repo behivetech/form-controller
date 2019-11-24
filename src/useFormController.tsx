@@ -56,6 +56,8 @@ interface useFormControllerArgs {
                 within the path must have an index number like my.field[0].path[].
             */
             formValuePath?: string | string[]
+            /** Alternate key to be used for the ref for components that use other keys such as inputRef instead */
+            inputRefKey?: string
             /** Callback function to run at the end of the onChange event of the element */
             onAfterChange?: Function
             /** Callback function to run at the beginning of the onChange event of the element */
@@ -139,7 +141,7 @@ interface useFormControllerResponse {
         checked?: boolean
         disabled?: boolean
         name: string
-        ref: Function
+        [key: string] | ref: Function
         value: string | number | null
     })
     submitButtonProps: {
@@ -410,14 +412,14 @@ export default function useFormController<useFormControllerResponse>({
 
     function getFieldProps(name: string) {
         const {checked, value} = get(fieldState, [name], {}) as any;
-        const {type, otherProps} = get(fieldProps, [name], {}) as any;
+        const {inputRefKey, type, otherProps} = get(fieldProps, [name], {}) as any;
 
         return {
             checked,
             disabled: isFormSubmitting(),
             name,
             onChange: handleFieldChange,
-            ref: initField,
+            [inputRefKey || 'ref']: initField,
             type: type || 'text',
             value,
             ...otherProps || {},
