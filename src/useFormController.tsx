@@ -300,7 +300,7 @@ export default function useFormController<useFormControllerResponse>({
                     // TODO: Probably need to memoize getFormValues or something
                     const fieldValues = getFormValues();
 
-                    fieldError = validator(fieldValues[name], fieldValues);
+                    fieldError = validator(fieldValues[name], getFormValues());
                 }
 
 
@@ -361,12 +361,12 @@ export default function useFormController<useFormControllerResponse>({
             value: undefined,
         };
 
+        validateField(name, value);
         setField(name, {
             checked: (checked === true) ? true : false,
             type,
             value,
         });
-        validateField(name, value);
     }
 
     function handleFormSubmit(event: React.FormEvent<HTMLFormElement>) {
