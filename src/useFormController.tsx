@@ -298,9 +298,7 @@ export default function useFormController<useFormControllerResponse>({
                     console.error('useFormController: Field validators must be functions', {validator})
                 } else {
                     // TODO: Probably need to memoize getFormValues or something
-                    const fieldValues = getFormValues();
-
-                    fieldError = validator(fieldValues[name], getFormValues());
+                    fieldError = validator(value, getFormValues());
                 }
 
 
@@ -361,12 +359,12 @@ export default function useFormController<useFormControllerResponse>({
             value: undefined,
         };
 
-        validateField(name, value);
         setField(name, {
             checked: (checked === true) ? true : false,
             type,
             value,
         });
+        validateField(name, value);
     }
 
     function handleFormSubmit(event: React.FormEvent<HTMLFormElement>) {
