@@ -298,7 +298,9 @@ export default function useFormController<useFormControllerResponse>({
                     console.error('useFormController: Field validators must be functions', {validator})
                 } else {
                     // TODO: Probably need to memoize getFormValues or something
-                    fieldError = validator(value, getFormValues());
+                    const fieldValues = getFormValues();
+
+                    fieldError = validator(fieldValues[name], fieldValues);
                 }
 
 
