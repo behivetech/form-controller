@@ -374,12 +374,8 @@ export default function useFormController<useFormControllerResponse>({
         const onBeforeSubmit = get(formProps, 'onBeforeSubmit', () => null);
 
         onBeforeSubmit();
-        if (!initialSubmit) {
-            // Validating all fields for autofill values if there hasn't been an initial submit
-            fieldsHaveError = validateAllFields();
-        }
 
-        if (!fieldsHaveError) {
+        if (!validateAllFields()) {
             executeForm();
         }
 
