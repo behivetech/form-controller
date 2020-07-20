@@ -1,3 +1,6 @@
+#Archived
+Archiving this project due to finding a good library already created... React Hook Form [https://react-hook-form.com/]. This libarary was not finished, but was close.
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 This is a React custom hook to use with forms. It adds the following functionality to your form
